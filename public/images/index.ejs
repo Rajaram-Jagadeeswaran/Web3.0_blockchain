@@ -1,0 +1,450 @@
+<%- include partials/header.ejs %>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js"></script>
+
+<script>
+    let paymentConnected = false;
+    let web3;
+    let account;
+    const connectContracts = async () => {
+        const transactionABI = [
+	{
+		"inputs": [],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address payable",
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]; // Include your contract ABI here
+        const transactionContractAddress = "0x664cb9038c527f37103bd97906bb1ab6f221a3cc"; // Replace with your contract address
+
+        window.web3 = new Web3(window.ethereum);
+		console.log("Before Transaction contract initialization");
+		window.transactContract = new window.web3.eth.Contract(transactionABI, transactionContractAddress);
+		console.log("After Transaction contract initialization");
+
+        const promoteABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "customer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "url",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "message",
+				"type": "string"
+			}
+		],
+		"name": "PromotionRequested",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "getAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "customer",
+				"type": "address"
+			}
+		],
+		"name": "getPromotionDetails",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "url",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "message",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "promotions",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "url",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "message",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "url",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "message",
+				"type": "string"
+			}
+		],
+		"name": "requestPromotion",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalPromotions",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]; // Include your contract ABI here
+        const promoteContractAddress = "0x1d87cefbfb6f9d14d511478dbfb7f92542b52ef7"; // Replace with your contract address
+
+        window.web3 = new Web3(window.ethereum);
+		console.log("Before Promote contract initialization");
+        window.promoteContract = new window.web3.eth.Contract(promoteABI, promoteContractAddress);
+		console.log("After Promote contract initialization");
+
+        console.log("Connected to contracts");
+    }
+
+    const initWeb3 = async () => {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+
+        if (!isLoggedIn) {
+            // Redirect to signin page
+            window.location.href = '/signin';
+            return;
+        }
+
+        if (window.ethereum) {
+            try {
+                // Request account access if needed
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                // Use MetaMask provider
+                web3 = new Web3(window.ethereum);
+                // Enable all buttons with the class "payment-btn"
+                enablePaymentButtons();
+                console.log('Connected to MetaMask');
+            } catch (error) {
+                console.error('User denied account access or MetaMask is not installed:', error);
+            }
+        } else {
+            console.error('MetaMask is not installed');
+        }
+    }
+
+    const enablePaymentButtons = () => {
+        paymentConnected = true;
+        var paymentButtons = document.getElementsByClassName('payment-btn');
+        for (var i = 0; i < paymentButtons.length; i++) {
+            paymentButtons[i].disabled = false;
+        }
+    }
+
+	const postToFacebookPage = async (pageAccessToken, message, link) => {
+		const pageId = '177867438749562 ';
+
+		try {
+			const response = await axios.post(
+				`https://graph.facebook.com/v12.0/${pageId}/feed`,
+				{
+					message,
+					link,
+				},
+				{
+					params: {
+						access_token: pageAccessToken,
+					},
+				}
+			);
+
+			console.log('Post created:', response.data);
+		} catch (error) {
+			console.error('Error creating post:', error.response.data);
+		}
+	}
+
+	const postToInstagram = async (accessToken, message, link) => {
+		const userId = 'balavignesh_sanghameswar'; // Replace with your Instagram User ID
+		const mediaUrl = 'URL_TO_YOUR_MEDIA'; // Replace with the URL to your media (image or video)
+
+		try {
+			const mediaResponse = await axios.post(
+				`https://graph.instagram.com/v12.0/${userId}/media`,
+				{
+					image_url: mediaUrl, // Change this based on your media type
+					caption: message,
+					media_type: 'IMAGE', // Change based on your media type (IMAGE or VIDEO)
+				},
+				{
+					params: {
+						access_token: accessToken,
+					},
+				}
+			);
+
+			const mediaId = mediaResponse.data.id;
+
+			// Step 2: Post to the Instagram Feed
+			const postResponse = await axios.post(
+				`https://graph.instagram.com/v12.0/${userId}/media_publish`,
+				{
+					creation_id: mediaId,
+				},
+				{
+					params: {
+						access_token: accessToken,
+					},
+				}
+			);
+
+			console.log('Post created on Instagram:', postResponse.data);
+		} catch (error) {
+			console.error('Error creating post on Instagram:', error.response.data);
+		}
+	};
+
+    const createCampaign = async (platform, amount) => {
+        const urlInput = document.getElementById("urlInput").value;
+        const messageInput = document.getElementById("messageInput").value;
+
+        if (paymentConnected) {
+            try {
+                const accounts = await ethereum.request({method: "eth_requestAccounts"});
+				account = accounts[0];
+                console.log(`Creating ${platform} campaign for ${amount} ETH`);
+                console.log('Sending transaction...');
+				console.log('Message Input: '+messageInput);
+				console.log('Url Input: '+urlInput);
+
+				// Call the contract method to deposit the amount
+				console.log("Deposit amount: "+amount);
+				console.log("Before transferring to contract");
+				await depositContract(amount);
+				console.log("After transferring to contract");
+
+                // Call the contract method to store the message and URL
+				console.log("Before requesting promotion, storing message and url in contract");
+				await requestPromotion(urlInput, messageInput);
+
+				// Call the contract method to withdraw the accumulated balance
+				console.log("Before transferring to owner");
+				await withdraw('0xA3AD617e2634904f39b2a5045E921614dB86c6E0',amount);
+				console.log("After transferring to owner");
+
+				console.log("Before fetching promotion details");
+				await getPromotionDetails();
+
+				if (platform === "Facebook") {
+					console.log('Before posting to Facebook Page');
+					const AccessToken = 'EABVC7sItfnEBOwOWZBZA94y3KKKZAtymdpuRbQhSLNG3ti2jyZAdGJS6tbi2ofGjLTuy1bzr9ZCRih815dJokKPZCSiqDiK6dPCvhAtjydvHZBV9NWY6ZAZCYpjDQCOSAX98LRnTdWRTCK4JauI8K5mw2ZAjqvs1DZArSrPMYUzNZA2ONtpdvDi8ENvPxziFuxK8qpAZD';
+					await postToFacebookPage(AccessToken, messageInput, urlInput);
+					console.log('After posting to Facebook Page');
+				} else if (platform === "Instagram") {
+					console.log('Before posting to Instagram');
+					const AccessToken = 'EABVC7sItfnEBOwOWZBZA94y3KKKZAtymdpuRbQhSLNG3ti2jyZAdGJS6tbi2ofGjLTuy1bzr9ZCRih815dJokKPZCSiqDiK6dPCvhAtjydvHZBV9NWY6ZAZCYpjDQCOSAX98LRnTdWRTCK4JauI8K5mw2ZAjqvs1DZArSrPMYUzNZA2ONtpdvDi8ENvPxziFuxK8qpAZD'; 
+					await postToInstagram(AccessToken, messageInput, urlInput);
+					console.log('After posting to Instagram');
+				} else {
+					console.log('Invalid platform specified');
+				}
+
+
+                console.log('Transaction successful');
+            } catch (error) {
+                console.error('Error creating campaign:', error);
+            }
+        } else {
+            console.log('Please connect to MetaMask first.');
+        }
+    }
+
+	const depositContract = async (amount) => {
+            // const amount = document.getElementById("depositInput").value;
+            amount = amount * 10000000000000000;
+            await window.transactContract.methods.deposit().send({from: account, value: amount});
+            console.log("Deposited amount to contract: "+(amount/10000000000000000));
+        }
+
+	const withdraw = async (address,amount) => {
+			amount = amount * 10000000000000000;
+            await window.transactContract.methods.withdraw(address, amount).send({from: account});
+			console.log('Amount = ${amount} transferred to address ${address}');
+        }
+
+	const requestPromotion = async (messageInput, urlInput) => {
+			await window.promoteContract.methods.requestPromotion(urlInput, messageInput).send({from: account});
+			console.log("After requesting promotion, storing message and url in contract");
+		}
+
+	const getPromotionDetails = async () => {
+			try {
+				const result = await window.promoteContract.methods.getPromotionDetails(account).call();
+				console.log("Promotion details:", result.url, result.message);
+				console.log("After fetching promotion details, message and url in contract");
+			} catch (error) {
+				console.error("Error fetching promotion details:", error);
+			}
+		}
+
+	// Additional styling for payment buttons
+    const stylePaymentButtons = () => {
+        var paymentButtons = document.getElementsByClassName('payment-btn');
+        for (var i = 0; i < paymentButtons.length; i++) {
+            paymentButtons[i].classList.add('btn', 'btn-primary'); // Add Bootstrap button classes
+            paymentButtons[i].style.padding = '10px';
+            paymentButtons[i].style.cursor = 'pointer';
+        }
+    }
+
+    // Connect to MetaMask and contract on page load
+    window.addEventListener('load', async () => {
+        await initWeb3();
+        await connectContracts();
+    });
+</script>
+
+<div class="jumbotron">
+    <h1 class="display-4">Social Media Marketing</h1>
+    <p class="lead">Create and customize your marketing campaigns</p>
+    <hr class="my-4">
+
+    <div class="campaign-container">
+		<label for="messageInput">Message:</label>
+        <input type="text" id="messageInput" placeholder="Enter your message">
+        <label for="urlInput">Website URL:</label>
+        <input type="text" id="urlInput" placeholder="Enter your website URL">
+
+        <div class="campaign-item">
+            <h3>Instagram</h3>
+            <p>Amount: 0.01 ETH + GAS price</p>
+            <button class="payment-btn" onclick="createCampaign('Instagram', '0.01')">Pay with MetaMask</button>
+        </div>
+
+        <div class="campaign-item">
+            <h3>Facebook</h3>
+            <p>Amount: 0.02 ETH + GAS price</p>
+            <button class="payment-btn" onclick="createCampaign('Facebook', '0.02')">Pay with MetaMask</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .campaign-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .campaign-item {
+        width: 30%;
+        margin-bottom: 20px;
+    }
+
+	label {
+        display: block;
+        margin-top: 10px;
+    }
+
+	.payment-btn {
+        /* Additional styling for payment buttons */
+        background-color: #28a745; /* Green color */
+        border: none;
+        color: #fff;
+        border-radius: 5px;
+        font-size: 16px;
+        padding: 10px;
+        cursor: pointer;
+    }
+</style>
+
+<%- include partials/footer.ejs %>

@@ -1,0 +1,33 @@
+<%- include partials/header.ejs %>
+
+<div class="jumbotron">
+    <h1 class="display-4">Sign In with MetaMask</h1>
+    <p class="lead">Connect your MetaMask wallet to sign in</p>
+    <hr class="my-4">
+    <p class="lead">
+        <button class="btn btn-success btn-lg" onclick="connectMetaMask()" role="button">Sign In with MetaMask</button>
+    </p>
+</div>
+
+<script>
+    const connectMetaMask = async () => {
+        try {
+            // Request MetaMask account access
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+
+            // Account connected successfully
+            const connectedAccount = accounts[0];
+            console.log(`Connected to MetaMask with account: ${connectedAccount}`);
+
+            // Set a session storage flag to indicate successful login
+            sessionStorage.setItem('isLoggedIn', 'true');
+
+            // Redirect to the index page (you can change the URL as needed)
+            window.location.href = '/';
+        } catch (error) {
+            console.error('Error connecting to MetaMask:', error);
+        }
+    }
+</script>
+
+<%- include partials/footer.ejs %>
