@@ -19,14 +19,6 @@ router.get('/map_view', function(req, res, next) {
   res.render('map_view', { title: 'Prime Mobiles', name:null });
 });
 
-router.get('/page5', function(req, res, next) {
-  res.render('page5', { title: 'Prime Mobiles', name:null });
-});
-
-router.get('/page6', function(req, res, next) {
-  res.render('page6', { title: 'Prime Mobiles', name:null });
-});
-
 
 
 module.exports = router;

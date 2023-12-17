@@ -1,104 +1,80 @@
 <%- include partials/header.ejs %>
- 
+
 <div class="jumbotron">
-  <h1 class="display-4">Prime Mobiles</h1>
-  <p class="lead">Select your prefered collection</p>
-  <hr class="my-4">
-  <div class="phone-container">
-    <div class="phone-item">
-      <img src="images/iphone 13.jpg" alt="Phone 1">
-      <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-      <p class="phone-price">Price: 0.04 ETH</p>
-      <button class="btn btn-success btn-lg payment-btn" onclick="confirmpayment('0.04')" disabled> Pay 0.04 ETH</button>
+	
+    <h1 class="display-4">Prime Mobiles</h1>
+    <p class="lead">Select your prefered collection</p>
+    <hr class="my-4">
+
+	<div class="input-container">
+        <label for="balanceDisplay">Account Balance:</label>
+        <span id="balanceDisplay">Loading...</span>
     </div>
- 
-    <div class="phone-item">
-      <img src="images/new 1.jpg" alt="Phone 2">
-      <p class="phone-description">Iphone 14 - 6GB RAM & 256 GB Internal</p>
-      <p class="phone-price">Price: 0.05 ETH</p>
-      <button class="btn btn-success btn-lg payment-btn" onclick="confirmpayment('0.05')" disabled> Pay 0.05 ETH</button>
+
+    <div class="input-container">
+        <label for="reviewInput">Review:</label>
+        <input type="text" id="reviewInput" placeholder="Enter your review">
     </div>
+
+    <div class="input-container">
+        <label for="delivery_addressInput">Delivery Address:</label>
+        <input type="text" id="delivery_addressInput" placeholder="Enter your Delivery Address">
    
-    <div class="phone-item">
-      <img src="images/new 2.jpg" alt="Phone 3">
-      <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-      <p class="phone-price">Price: 0.06 ETH</p>
-      <button class="btn btn-success btn-lg payment-btn" onclick="confirmpayment('0.06')" disabled> Pay 0.06 ETH</button>
     </div>
+
+    <br> 
+
+    <div class="phone-container">
+
+      <div class="phone-item">
+        <img src="images/iphone 13.jpg" alt="Phone 1">
+        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
+        <p class="phone-price">Price: 0.04 ETH</p>
+        <button class="payment-btn" onclick="createPayment('0.04')"> Pay 0.04 ETH</button>
+      </div>
    
-    <div class="phone-item">
-      <img src="images/new 3.jpg" alt="Phone 4">
-      <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-      <p class="phone-price">Price: 0.05 ETH</p>
-      <button class="btn btn-success btn-lg payment-btn" onclick="confirmpayment('0.05')" disabled> Pay 0.05 ETH</button>
+      <div class="phone-item">
+        <img src="images/new 1.jpg" alt="Phone 2">
+        <p class="phone-description">Iphone 14 - 6GB RAM & 256 GB Internal</p>
+        <p class="phone-price">Price: 0.05 ETH</p>
+        <button class="payment-btn" onclick="createPayment('0.05')"> Pay 0.05 ETH</button>
+      </div>
+     
+      <div class="phone-item">
+        <img src="images/new 2.jpg" alt="Phone 3">
+        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
+        <p class="phone-price">Price: 0.06 ETH</p>
+        <button class="payment-btn" onclick="createPayment('0.06')"> Pay 0.06 ETH</button>
+      </div>
+     
+      <div class="phone-item">
+        <img src="images/new 3.jpg" alt="Phone 4">
+        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
+        <p class="phone-price">Price: 0.05 ETH</p>
+        <button class="payment-btn" onclick="createPayment('0.05')"> Pay 0.05 ETH</button>
+      </div>
+      <div class="phone-item">
+        <img src="images/new 1.jpg" alt="Phone 5">
+        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
+        <p class="phone-price">Price: 0.02 ETH</p>
+        <button class="payment-btn" onclick="createPayment('0.02')"> Pay 0.02 ETH</button>
+      </div>
+      <div class="phone-item">
+        <img src="images/new 4.jpg" alt="Phone 6">
+        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
+        <p class="phone-price">Price: 0.03 ETH</p>
+        <button class="payment-btn" onclick="createPayment('0.03')"> Pay 0.03 ETH</button>
+      </div>
     </div>
-    <div class="phone-item">
-      <img src="images/new 1.jpg" alt="Phone 5">
-      <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-      <p class="phone-price">Price: 0.02 ETH</p>
-      <button class="btn btn-success btn-lg payment-btn" onclick="confirmpayment('0.02')" disabled> Pay 0.02 ETH</button>
-    </div>
-    <div class="phone-item">
-      <img src="images/new 4.jpg" alt="Phone 6">
-      <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-      <p class="phone-price">Price: 0.03 ETH</p>
-      <button class="btn btn-success btn-lg payment-btn" onclick="confirmpayment('0.03')" disabled> Pay 0.03 ETH</button>
-    </div>
-  </div>
- 
-  <p class="lead">
-    <a class="btn btn-success btn-lg" onclick="connectMetamask()" role="button">Connect to Meta Mask</a>
-  </p>
-</div>
- 
-<style>
-  .phone-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between; /* or use space-around for some space between items */
-  }
- 
-  .phone-item {
-    width: 30%; /* Adjust the width as per your design */
-    margin-bottom: 20px; /* Add some bottom margin for spacing */
-  }
- 
-  .phone-item img {
-    max-width: 70%; /* Ensure the image doesn't exceed the width of the container */
-    height: auto; /* Maintain the aspect ratio of the image */
-  }
-</style>
- 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js"></script>
+
 <script>
-  let account;
-    const confirmpayment = async (amount) => {
-        if(window.ethereum !== "underfined"){
-            const accounts = await ethereum.request({method: "eth_requestAccounts"});
-            account = accounts[0];
-            // document.getElementById("userArea").innerHTML = `User Account: ${account}`;
-            console.log("Confirm your payment"+amount);
-            depositContract(amount);
-        }
-    }
-   
-    const connectMetamask = async () => {
-        if(window.ethereum !== "underfined"){
-            const accounts = await ethereum.request({method: "eth_requestAccounts"});
-            account = accounts[0];
-            // document.getElementById("userArea").innerHTML = `User Account: ${account}`;
-            console.log("connected to user metamask");
-            var paymentButtons = document.getElementsByClassName('payment-btn');
-            // Enable all buttons with the class "payment-btn"
-            for (var i = 0; i < paymentButtons.length; i++) {
-                paymentButtons[i].disabled = false;
-            }
-            connectContract();
- 
-        }
-    }
- 
-    const connectContract = async () => {
-            const ABI = [
+    let paymentConnected = false;
+    let web3;
+    let account;
+    const connectContracts = async () => {
+        const transactionABI = [
 	{
 		"inputs": [],
 		"name": "deposit",
@@ -150,29 +126,334 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-];
-            const Address = "0xf36aBFcf16C78295E0d700CBbA204407186bAb8E"; // Taking Address from Remix
-            window.web3 = await new Web3(window.ethereum);
-            window.contract = await new window.web3.eth.Contract(ABI, Address);
-            // document.getElementById("contractArea").innerHTML = "Connected to Contract"; // calling the elementID above
-            console.log("Connected to contract");
+]; // Include your contract ABI here
+        const transactionContractAddress = "0xf36aBFcf16C78295E0d700CBbA204407186bAb8E"; // Replace with your contract address
+
+        window.web3 = new Web3(window.ethereum);
+		console.log("Before Transaction contract initialization");
+		window.transactContract = new window.web3.eth.Contract(transactionABI, transactionContractAddress);
+		console.log("After Transaction contract initialization");
+
+        const promoteABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "customer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "delivery_address",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "review",
+				"type": "string"
+			}
+		],
+		"name": "OrderRequested",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "getAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "customer",
+				"type": "address"
+			}
+		],
+		"name": "getOrderDetails",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "delivery_address",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "review",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "orders",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "delivery_address",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "review",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "delivery_address",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "review",
+				"type": "string"
+			}
+		],
+		"name": "requestOrder",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalOrders",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]; // Include your contract ABI here
+        const orderContractAddress = "0xe9e6268153c8688E0cd1a134AE599A1A5f96A1Bd"; // Replace with your contract address
+
+        window.web3 = new Web3(window.ethereum);
+		console.log("Before Promote contract initialization");
+        window.promoteContract = new window.web3.eth.Contract(promoteABI, orderContractAddress);
+		console.log("After Promote contract initialization");
+
+        console.log("Connected to contracts");
+    }
+
+    const initWeb3 = async () => {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+
+        if (!isLoggedIn) {
+            // Redirect to signin page
+            window.location.href = '/signin';
+            return;
         }
- 
-        const getContractAccount = async () => {
-            const data = await window.contract.methods.getAddress().call();
-            document.getElementById("contractAccount").innerHTML = `Contract Account: ${data}`;
-            console.log("This Contract Account ");
+
+        if (window.ethereum) {
+            try {
+                // Request account access if needed
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                // Use MetaMask provider
+                web3 = new Web3(window.ethereum);
+                // Enable all buttons with the class "payment-btn"
+                enablePaymentButtons();
+                console.log('Connected to MetaMask');
+            } catch (error) {
+                console.error('User denied account access or MetaMask is not installed:', error);
+            }
+        } else {
+            console.error('MetaMask is not installed');
         }
-       
-        const depositContract = async (amount) => {
+    }
+
+	const updateBalanceDisplay = async () => {
+    if (paymentConnected) {
+        try {
+            // Call the contract method to get the account balance
+            const balance = await window.transactContract.methods.getBalance().call({ from: account });
+            console.log('Raw Balance (wei):', balance);
+            const formattedBalance = web3.utils.fromWei(balance, 'ether'); // Convert from wei to ether
+            console.log('Formatted Balance (ether):', formattedBalance);
+            document.getElementById('balanceDisplay').innerText = `${formattedBalance} ETH`;
+        } catch (error) {
+            console.error('Error fetching account balance:', error);
+        }
+    } else {
+        console.log('Please connect to MetaMask first.');
+    }
+}
+
+    const enablePaymentButtons = () => {
+        paymentConnected = true;
+        var paymentButtons = document.getElementsByClassName('payment-btn');
+        for (var i = 0; i < paymentButtons.length; i++) {
+            paymentButtons[i].disabled = false;
+        }
+    }
+
+    const createPayment = async (amount) => {
+        const delivery_addressInput = document.getElementById("delivery_addressInput").value;
+        const reviewInput = document.getElementById("reviewInput").value;
+
+        if (paymentConnected) {
+            try {
+                const accounts = await ethereum.request({method: "eth_requestAccounts"});
+				account = accounts[0];
+                // console.log(`Creating ${platform} campaign for ${amount} ETH`);
+                console.log('Sending transaction...');
+				console.log('Review Input: '+reviewInput);
+				console.log('Delivery Address Input: '+delivery_addressInput);
+
+				// Call the contract method to deposit the amount
+				console.log("Deposit amount: "+amount);
+				console.log("Before transferring to contract");
+				await depositContract(amount);
+				console.log("After transferring to contract");
+
+                // Call the contract method to store the message and URL
+				console.log("Before requesting promotion, storing message and url in contract");
+				await requestOrder(delivery_addressInput, reviewInput);
+
+				// Call the contract method to withdraw the accumulated balance
+				console.log("Before transferring to owner");
+				await withdraw('0xb392e9adb8aAfb2D994ea33BBc7BF0D8d242EB42',amount);
+				console.log("After transferring to owner");
+
+				console.log("Before fetching promotion details");
+				await getOrderDetails();
+
+                console.log('Transaction successful');
+            } catch (error) {
+                console.error('Error creating campaign:', error);
+            }
+        } else {
+            console.log('Please connect to MetaMask first.');
+        }
+    }
+
+	const depositContract = async (amount) => {
             // const amount = document.getElementById("depositInput").value;
-            amount = amount * 100000000000000000;
-            await window.contract.methods.deposit().send({from: account, value: amount});
-            console.log("Deposited amount to contract"+amount);
+            amount = amount * 10000000000000000;
+            await window.transactContract.methods.deposit().send({from: account, value: amount});
+            console.log("Deposited amount to contract: "+(amount/10000000000000000));
         }
- 
+
+	const withdraw = async (address,amount) => {
+			amount = amount * 10000000000000000;
+            await window.transactContract.methods.withdraw(address, amount).send({from: account});
+			console.log('Amount = ${amount} transferred to address ${address}');
+        }
+
+	const requestOrder = async (reviewInput, delivery_addressInput) => {
+			await window.promoteContract.methods.requestOrder(delivery_addressInput, reviewInput).send({from: account});
+			console.log("After requesting promotion, storing message and url in contract");
+		}
+
+	const getOrderDetails = async () => {
+			try {
+				const result = await window.promoteContract.methods.getOrderDetails(account).call();
+				console.log("Promotion details:", result.delivery_address, result.review);
+				console.log("After fetching promotion details, message and url in contract");
+			} catch (error) {
+				console.error("Error fetching promotion details:", error);
+			}
+		}
+
+	// Additional styling for payment buttons
+    const stylePaymentButtons = () => {
+        var paymentButtons = document.getElementsByClassName('payment-btn');
+        for (var i = 0; i < paymentButtons.length; i++) {
+            paymentButtons[i].classList.add('btn', 'btn-primary'); // Add Bootstrap button classes
+            paymentButtons[i].style.padding = '10px';
+            paymentButtons[i].style.cursor = 'pointer';
+        }
+    }
+
+    // Connect to MetaMask and contract on page load
+    window.addEventListener('load', async () => {
+        await initWeb3();
+        await connectContracts();
+    });
+
+	// Update balance display on page load
+	window.addEventListener('load', async () => {
+        await initWeb3();
+        await connectContracts();
+        await updateBalanceDisplay();
+    });
 </script>
- 
- 
- 
+
+<style>
+    .campaign-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .campaign-item {
+        width: 30%;
+        margin-bottom: 20px;
+    }
+
+	label {
+        display: block;
+        margin-top: 10px;
+    }
+
+	.payment-btn {
+        background-color: #28a745; /* Green color */
+        border: none;
+        color: #fff;
+        border-radius: 5px;
+        font-size: 16px;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .phone-container {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between; 
+    }
+    
+    .phone-item {
+        width: 30%;
+        margin-bottom: 20px; 
+    }
+    
+    .phone-item img {
+        max-width: 70%; 
+        height: auto; 
+    }
+
+    .input-container {
+            display: inline-block;
+            margin-right: 20px; 
+        }
+</style>
+
 <%- include partials/footer.ejs %>

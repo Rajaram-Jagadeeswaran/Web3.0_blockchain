@@ -1,70 +1,50 @@
 <%- include partials/header.ejs %>
 
 <div class="jumbotron">
-    <h1 class="display-4">Prime Mobiles</h1>
-    <p class="lead">Select your prefered collection</p>
-    <hr class="my-4">
-
-	<div class="input-container">
-        <label for="balanceDisplay">Account Balance:</label>
-        <span id="balanceDisplay">Loading...</span>
-    </div>
-
-    <div class="input-container">
-        <label for="reviewInput">Review:</label>
-        <input type="text" id="reviewInput" placeholder="Enter your review">
-    </div>
-
-    <div class="input-container">
-        <label for="delivery_addressInput">Delivery Address:</label>
-        <input type="text" id="delivery_addressInput" placeholder="Enter your Delivery Address">
-   
-    </div>
-
-    <br> 
-
-    <div class="phone-container">
-
-      <div class="phone-item">
-        <img src="images/iphone 13.jpg" alt="Phone 1">
-        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-        <p class="phone-price">Price: 0.04 ETH</p>
-        <button class="payment-btn" onclick="createPayment('0.04')"> Pay 0.04 ETH</button>
+  <div class="input-container">
+      <h1 class="display-4">Prime Mobiles</h1>
+      <div class="lead">
+          <label for="balanceDisplay">Contract Account Balance:</label>
+          <span id="balanceDisplay">Loading...</span>
       </div>
-   
-      <div class="phone-item">
-        <img src="images/new 1.jpg" alt="Phone 2">
-        <p class="phone-description">Iphone 14 - 6GB RAM & 256 GB Internal</p>
-        <p class="phone-price">Price: 0.05 ETH</p>
-        <button class="payment-btn" onclick="createPayment('0.05')"> Pay 0.05 ETH</button>
+  </div>
+  <hr class="my-4">
+  <div id="demo" class="carousel slide" data-ride="carousel">
+      <ul class="carousel-indicators">
+          <li data-target="#demo" data-slide-to="0" class="active"></li>
+          <li data-target="#demo" data-slide-to="1"></li>
+          <li data-target="#demo" data-slide-to="2"></li>
+          <li data-target="#demo" data-slide-to="3"></li>
+          <li data-target="#demo" data-slide-to="4"></li>
+      </ul>
+      <div class="carousel-inner">
+          <div class="carousel-item active">
+              <img src="images/smartphone.jpg" alt="slide one" width="500" height="300">
+              <div class="carousel-caption">
+                  <h3>World of Mobiles</h3>
+              </div>
+          </div>
+          <div class="carousel-item">
+              <img src="images/shop.jpg" alt="slide two" width="500" height="300">
+              <div class="carousel-caption">
+                  <h3>Your Shopping & Your Orders</h3>
+              </div>
+          </div>
+          <div class="carousel-item">
+              <img src="images/bitcoin.jpg" alt="slide three" width="500" height="300">
+              <div class="carousel-caption">
+                  <h3>Pay with your Bitcoin</h3>
+              </div>
+          </div>
+          <a class="carousel-control-prev" href="#demo" data-slide="prev">
+              <span class="carousel-control-prev-icon"></span>
+          </a>
+          <a class="carousel-control-next" href="#demo" data-slide="next">
+              <span class="carousel-control-next-icon"></span>
+          </a>
       </div>
-     
-      <div class="phone-item">
-        <img src="images/new 2.jpg" alt="Phone 3">
-        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-        <p class="phone-price">Price: 0.06 ETH</p>
-        <button class="payment-btn" onclick="createPayment('0.06')"> Pay 0.06 ETH</button>
-      </div>
-     
-      <div class="phone-item">
-        <img src="images/new 3.jpg" alt="Phone 4">
-        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-        <p class="phone-price">Price: 0.05 ETH</p>
-        <button class="payment-btn" onclick="createPayment('0.05')"> Pay 0.05 ETH</button>
-      </div>
-      <div class="phone-item">
-        <img src="images/new 1.jpg" alt="Phone 5">
-        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-        <p class="phone-price">Price: 0.02 ETH</p>
-        <button class="payment-btn" onclick="createPayment('0.02')"> Pay 0.02 ETH</button>
-      </div>
-      <div class="phone-item">
-        <img src="images/new 4.jpg" alt="Phone 6">
-        <p class="phone-description">Redmi Note 12 Pro - 6GB RAM & 128GB Internal</p>
-        <p class="phone-price">Price: 0.03 ETH</p>
-        <button class="payment-btn" onclick="createPayment('0.03')"> Pay 0.03 ETH</button>
-      </div>
-    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js"></script>
 
@@ -305,92 +285,6 @@
     }
 }
 
-    const enablePaymentButtons = () => {
-        paymentConnected = true;
-        var paymentButtons = document.getElementsByClassName('payment-btn');
-        for (var i = 0; i < paymentButtons.length; i++) {
-            paymentButtons[i].disabled = false;
-        }
-    }
-
-    const createPayment = async (amount) => {
-        const delivery_addressInput = document.getElementById("delivery_addressInput").value;
-        const reviewInput = document.getElementById("reviewInput").value;
-
-        if (paymentConnected) {
-            try {
-                const accounts = await ethereum.request({method: "eth_requestAccounts"});
-				account = accounts[0];
-                // console.log(`Creating ${platform} campaign for ${amount} ETH`);
-                console.log('Sending transaction...');
-				console.log('Review Input: '+reviewInput);
-				console.log('Delivery Address Input: '+delivery_addressInput);
-
-				// Call the contract method to deposit the amount
-				console.log("Deposit amount: "+amount);
-				console.log("Before transferring to contract");
-				await depositContract(amount);
-				console.log("After transferring to contract");
-
-                // Call the contract method to store the message and URL
-				console.log("Before requesting promotion, storing message and url in contract");
-				await requestOrder(delivery_addressInput, reviewInput);
-
-				// Call the contract method to withdraw the accumulated balance
-				console.log("Before transferring to owner");
-				await withdraw('0xb392e9adb8aAfb2D994ea33BBc7BF0D8d242EB42',amount);
-				console.log("After transferring to owner");
-
-				console.log("Before fetching promotion details");
-				await getOrderDetails();
-
-                console.log('Transaction successful');
-            } catch (error) {
-                console.error('Error creating campaign:', error);
-            }
-        } else {
-            console.log('Please connect to MetaMask first.');
-        }
-    }
-
-	const depositContract = async (amount) => {
-            // const amount = document.getElementById("depositInput").value;
-            amount = amount * 10000000000000000;
-            await window.transactContract.methods.deposit().send({from: account, value: amount});
-            console.log("Deposited amount to contract: "+(amount/10000000000000000));
-        }
-
-	const withdraw = async (address,amount) => {
-			amount = amount * 10000000000000000;
-            await window.transactContract.methods.withdraw(address, amount).send({from: account});
-			console.log('Amount = ${amount} transferred to address ${address}');
-        }
-
-	const requestOrder = async (reviewInput, delivery_addressInput) => {
-			await window.promoteContract.methods.requestOrder(delivery_addressInput, reviewInput).send({from: account});
-			console.log("After requesting promotion, storing message and url in contract");
-		}
-
-	const getOrderDetails = async () => {
-			try {
-				const result = await window.promoteContract.methods.getOrderDetails(account).call();
-				console.log("Promotion details:", result.delivery_address, result.review);
-				console.log("After fetching promotion details, message and url in contract");
-			} catch (error) {
-				console.error("Error fetching promotion details:", error);
-			}
-		}
-
-	// Additional styling for payment buttons
-    const stylePaymentButtons = () => {
-        var paymentButtons = document.getElementsByClassName('payment-btn');
-        for (var i = 0; i < paymentButtons.length; i++) {
-            paymentButtons[i].classList.add('btn', 'btn-primary'); // Add Bootstrap button classes
-            paymentButtons[i].style.padding = '10px';
-            paymentButtons[i].style.cursor = 'pointer';
-        }
-    }
-
     // Connect to MetaMask and contract on page load
     window.addEventListener('load', async () => {
         await initWeb3();
@@ -402,6 +296,24 @@
         await initWeb3();
         await connectContracts();
         await updateBalanceDisplay();
+    });
+
+    const updateMetamaskId = async () => {
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const metamaskId = accounts[0];
+            document.getElementById('metamaskId').innerText = `Connected Account: ${metamaskId}`;
+        } catch (error) {
+            console.error('Error fetching MetaMask account:', error);
+        }
+    }
+
+    // Update MetaMask account display on page load
+    window.addEventListener('load', async () => {
+        await initWeb3();
+        await connectContracts();
+        await updateBalanceDisplay();
+        await updateMetamaskId();
     });
 </script>
 
@@ -452,7 +364,31 @@
     .input-container {
             display: inline-block;
             margin-right: 20px; 
-        }
+    }
+
+    .jumbotron {
+        position: relative;
+    }
+
+    .metamask-info {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+    }
+    .carousel-item {
+        text-align: center; 
+    }
+
+    .carousel-inner img {
+      display: block;
+      width: 70%;
+      margin: auto;
+      height: auto;
+    }
+    .lead {
+        text-align: left;
+    }
 </style>
 
 <%- include partials/footer.ejs %>
