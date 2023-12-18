@@ -3,7 +3,6 @@
   <head>
     <title><%= title %></title>
 
-    <link rel='stylesheet' href='/stylesheets/otherstyle.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -34,9 +33,9 @@
           </li>
 
         </ul>
-        <div class="nav-item">
-          <p class="nav-link" id="metamaskId" style="color: white; font-weight: bold;">Account: Loading...</p>
-        </div>
+        <li class="nav-item">
+          <p class="nav-link" id="metamaskId" style="color: white; ">Account: Loading...</p>
+        </li>
       </div>
     </nav> 
 
@@ -226,7 +225,7 @@
 		"type": "function"
 	}
 ]; // Include your contract ABI here
-        const orderContractAddress = "0xe9e6268153c8688E0cd1a134AE599A1A5f96A1Bd"; // Replace with your contract address
+        const orderContractAddress = "0xe9e6268153c8688E0cd1a134AE599A1A5f96A1Bd"; 
 
         window.web3 = new Web3(window.ethereum);
 		console.log("Before Order contract initialization");
@@ -247,7 +246,6 @@
 
         if (window.ethereum) {
             try {
-                // Request account access if needed
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 // Use MetaMask provider
                 web3 = new Web3(window.ethereum);
@@ -302,7 +300,7 @@
             try {
                 const accounts = await ethereum.request({method: "eth_requestAccounts"});
 				account = accounts[0];
-                // console.log(`Creating ${platform} campaign for ${amount} ETH`);
+                // console.log(`Creating ${platform} payment order for ${amount} ETH`);
                 console.log('Sending transaction...');
 				console.log('Review Input: '+reviewInput);
 				console.log('Delivery Address Input: '+delivery_addressInput);
@@ -314,7 +312,7 @@
 				console.log("After transferring to contract");
 
                 // Call the contract method to store the message and URL
-				console.log("Before requesting promotion, storing deliver_address and review in contract");
+				console.log("Before requesting payment, storing deliver_address and review in contract");
 				await requestOrder(delivery_addressInput, reviewInput);
 
 				// Call the contract method to withdraw the accumulated balance
