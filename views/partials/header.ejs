@@ -38,4 +38,355 @@
           <p class="nav-link" id="metamaskId" style="color: white; font-weight: bold;">Account: Loading...</p>
         </div>
       </div>
-    </nav>
+    </nav> 
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js"></script>
+
+<script>
+    let paymentConnected = false;
+    let web3;
+    let account;
+    const connectContracts = async () => {
+        const transactionABI = [
+	{
+		"inputs": [],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address payable",
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]; // Include your contract ABI here
+        const transactionContractAddress = "0xf36aBFcf16C78295E0d700CBbA204407186bAb8E"; // Replace with your contract address
+
+        window.web3 = new Web3(window.ethereum);
+		console.log("Before Transaction contract initialization");
+		window.transactContract = new window.web3.eth.Contract(transactionABI, transactionContractAddress);
+		console.log("After Transaction contract initialization");
+
+        const orderABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "customer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "delivery_address",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "review",
+				"type": "string"
+			}
+		],
+		"name": "OrderRequested",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "getAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "customer",
+				"type": "address"
+			}
+		],
+		"name": "getOrderDetails",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "delivery_address",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "review",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "orders",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "delivery_address",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "review",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "delivery_address",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "review",
+				"type": "string"
+			}
+		],
+		"name": "requestOrder",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalOrders",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]; // Include your contract ABI here
+        const orderContractAddress = "0xe9e6268153c8688E0cd1a134AE599A1A5f96A1Bd"; // Replace with your contract address
+
+        window.web3 = new Web3(window.ethereum);
+		console.log("Before Order contract initialization");
+        window.orderContract = new window.web3.eth.Contract(orderABI, orderContractAddress);
+		console.log("After Order contract initialization");
+
+        console.log("Connected to contracts");
+    }
+
+    const initWeb3 = async () => {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+
+        if (!isLoggedIn) {
+            // Redirect to signin page
+            window.location.href = '/signin';
+            return;
+        }
+
+        if (window.ethereum) {
+            try {
+                // Request account access if needed
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                // Use MetaMask provider
+                web3 = new Web3(window.ethereum);
+                // Enable all buttons with the class "payment-btn"
+                enablePaymentButtons();
+                console.log('Connected to MetaMask');
+            } catch (error) {
+                console.error('User denied account access or MetaMask is not installed:', error);
+            }
+        } else {
+            console.error('MetaMask is not installed');
+        }
+    }
+
+    const updateBalanceDisplay = async () => {
+    if (paymentConnected) {
+        try {
+            // Ensure that MetaMask is connected and accounts are available
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                const account = window.ethereum.selectedAddress;
+
+                // Get the user's MetaMask account balance
+                const ethBalance = await window.web3.eth.getBalance(account);
+                console.log('Raw Balance (wei):', ethBalance);
+                const formattedBalance = window.web3.utils.fromWei(ethBalance, 'ether'); // Convert from wei to ether
+                console.log('Formatted Balance (ether):', formattedBalance);
+                document.getElementById('balanceDisplay').innerText = `${formattedBalance} ETH`;
+            } else {
+                console.log('MetaMask is not connected or accounts are not available.');
+            }
+        } catch (error) {
+            console.error('Error fetching account balance:', error);
+        }
+    } else {
+        console.log('Please connect to MetaMask first.');
+    }
+}
+
+    const enablePaymentButtons = () => {
+        paymentConnected = true;
+        var paymentButtons = document.getElementsByClassName('payment-btn');
+        for (var i = 0; i < paymentButtons.length; i++) {
+            paymentButtons[i].disabled = false;
+        }
+    }
+
+    const createPayment = async (amount) => {
+        const delivery_addressInput = document.getElementById("delivery_addressInput").value;
+        const reviewInput = document.getElementById("reviewInput").value;
+
+        if (paymentConnected) {
+            try {
+                const accounts = await ethereum.request({method: "eth_requestAccounts"});
+				account = accounts[0];
+                // console.log(`Creating ${platform} campaign for ${amount} ETH`);
+                console.log('Sending transaction...');
+				console.log('Review Input: '+reviewInput);
+				console.log('Delivery Address Input: '+delivery_addressInput);
+
+				// Call the contract method to deposit the amount
+				console.log("Deposit amount: "+amount);
+				console.log("Before transferring to contract");
+				await depositContract(amount);
+				console.log("After transferring to contract");
+
+                // Call the contract method to store the message and URL
+				console.log("Before requesting promotion, storing deliver_address and review in contract");
+				await requestOrder(delivery_addressInput, reviewInput);
+
+				// Call the contract method to withdraw the accumulated balance
+				console.log("Before transferring to owner");
+				await withdraw('0xb392e9adb8aAfb2D994ea33BBc7BF0D8d242EB42',amount);
+				console.log("After transferring to owner");
+
+				console.log("Before fetching order details");
+				await getOrderDetails();
+
+                console.log('Transaction successful');
+            } catch (error) {
+                console.error('Error creating payment:', error);
+            }
+        } else {
+            console.log('Please connect to MetaMask first.');
+        }
+    }
+
+	const depositContract = async (amount) => {
+            // const amount = document.getElementById("depositInput").value;
+            amount = amount * 1000000000000000000;
+            await window.transactContract.methods.deposit().send({from: account, value: amount});
+            console.log("Deposited amount to contract: "+(amount/10000000000000000));
+        }
+
+	const withdraw = async (address,amount) => {
+          const balance = await window.transactContract.methods.getBalance().call();
+          console.log('Raw Balance (wei):', balance);
+          await window.transactContract.methods.withdraw(address, balance).send({from: account});
+			console.log('Amount = ${amount} transferred to address ${address}');
+        }
+
+	const requestOrder = async (reviewInput, delivery_addressInput) => {
+			await window.orderContract.methods.requestOrder(delivery_addressInput, reviewInput).send({from: account});
+			console.log("After requesting order, storing delivery_address and review in contract");
+		}
+
+	const getOrderDetails = async () => {
+			try {
+				const result = await window.orderContract.methods.getOrderDetails(account).call();
+				console.log("Promotion details:", result.delivery_address, result.review);
+				console.log("After fetching order details, delivery_address and review in contract");
+			} catch (error) {
+				console.error("Error fetching order details:", error);
+			}
+		}
+
+  const updateMetamaskId = async () => {
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const metamaskId = accounts[0];
+            document.getElementById('metamaskId').innerText = `Connected Account: ${metamaskId}`;
+        } catch (error) {
+            console.error('Error fetching MetaMask account:', error);
+        }
+    } 
+
+    const stylePaymentButtons = () => {
+        var paymentButtons = document.getElementsByClassName('payment-btn');
+        for (var i = 0; i < paymentButtons.length; i++) {
+            paymentButtons[i].classList.add('btn', 'btn-primary'); // Add Bootstrap button classes
+            paymentButtons[i].style.padding = '10px';
+            paymentButtons[i].style.cursor = 'pointer';
+        }
+    }
+
+    // Update MetaMask account display on page load
+    window.addEventListener('load', async () => {
+        await initWeb3();
+        await connectContracts();
+        await updateBalanceDisplay();
+        await updateMetamaskId();
+    }); 
+</script>

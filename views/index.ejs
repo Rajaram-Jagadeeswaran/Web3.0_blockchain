@@ -4,7 +4,7 @@
   <div class="input-container">
       <h1 class="display-4">Prime Mobiles</h1>
       <div class="lead">
-          <label for="balanceDisplay">Contract Account Balance:</label>
+          <label for="balanceDisplay">My Metamask Account Balance:</label>
           <span id="balanceDisplay">Loading...</span>
       </div>
   </div>
@@ -14,24 +14,22 @@
           <li data-target="#demo" data-slide-to="0" class="active"></li>
           <li data-target="#demo" data-slide-to="1"></li>
           <li data-target="#demo" data-slide-to="2"></li>
-          <li data-target="#demo" data-slide-to="3"></li>
-          <li data-target="#demo" data-slide-to="4"></li>
       </ul>
       <div class="carousel-inner">
           <div class="carousel-item active">
-              <img src="images/smartphone.jpg" alt="slide one" width="500" height="300">
+              <img src="images/smartphone.jpg" alt="slide one" width="500" height="200">
               <div class="carousel-caption">
                   <h3>World of Mobiles</h3>
               </div>
           </div>
           <div class="carousel-item">
-              <img src="images/shop.jpg" alt="slide two" width="500" height="300">
+              <img src="images/shop.jpg" alt="slide two" width="500" height="200">
               <div class="carousel-caption">
                   <h3>Your Shopping & Your Orders</h3>
               </div>
           </div>
           <div class="carousel-item">
-              <img src="images/bitcoin.jpg" alt="slide three" width="500" height="300">
+              <img src="images/bitcoin.jpg" alt="slide three" width="500" height="200">
               <div class="carousel-caption">
                   <h3>Pay with your Bitcoin</h3>
               </div>
@@ -48,274 +46,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js"></script>
 
-<script>
-    let paymentConnected = false;
-    let web3;
-    let account;
-    const connectContracts = async () => {
-        const transactionABI = [
-	{
-		"inputs": [],
-		"name": "deposit",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address payable",
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "withdraw",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getAddress",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-]; // Include your contract ABI here
-        const transactionContractAddress = "0xf36aBFcf16C78295E0d700CBbA204407186bAb8E"; // Replace with your contract address
-
-        window.web3 = new Web3(window.ethereum);
-		console.log("Before Transaction contract initialization");
-		window.transactContract = new window.web3.eth.Contract(transactionABI, transactionContractAddress);
-		console.log("After Transaction contract initialization");
-
-        const promoteABI = [
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "customer",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "delivery_address",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "review",
-				"type": "string"
-			}
-		],
-		"name": "OrderRequested",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "getAddress",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "customer",
-				"type": "address"
-			}
-		],
-		"name": "getOrderDetails",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "delivery_address",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "review",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "orders",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "delivery_address",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "review",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "delivery_address",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "review",
-				"type": "string"
-			}
-		],
-		"name": "requestOrder",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalOrders",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-]; // Include your contract ABI here
-        const orderContractAddress = "0xe9e6268153c8688E0cd1a134AE599A1A5f96A1Bd"; // Replace with your contract address
-
-        window.web3 = new Web3(window.ethereum);
-		console.log("Before Promote contract initialization");
-        window.promoteContract = new window.web3.eth.Contract(promoteABI, orderContractAddress);
-		console.log("After Promote contract initialization");
-
-        console.log("Connected to contracts");
-    }
-
-    const initWeb3 = async () => {
-        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-
-        if (!isLoggedIn) {
-            // Redirect to signin page
-            window.location.href = '/signin';
-            return;
-        }
-
-        if (window.ethereum) {
-            try {
-                // Request account access if needed
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                // Use MetaMask provider
-                web3 = new Web3(window.ethereum);
-                // Enable all buttons with the class "payment-btn"
-                enablePaymentButtons();
-                console.log('Connected to MetaMask');
-            } catch (error) {
-                console.error('User denied account access or MetaMask is not installed:', error);
-            }
-        } else {
-            console.error('MetaMask is not installed');
-        }
-    }
-
-	const updateBalanceDisplay = async () => {
-    if (paymentConnected) {
-        try {
-            // Call the contract method to get the account balance
-            const balance = await window.transactContract.methods.getBalance().call({ from: account });
-            console.log('Raw Balance (wei):', balance);
-            const formattedBalance = web3.utils.fromWei(balance, 'ether'); // Convert from wei to ether
-            console.log('Formatted Balance (ether):', formattedBalance);
-            document.getElementById('balanceDisplay').innerText = `${formattedBalance} ETH`;
-        } catch (error) {
-            console.error('Error fetching account balance:', error);
-        }
-    } else {
-        console.log('Please connect to MetaMask first.');
-    }
-}
-
-    // Connect to MetaMask and contract on page load
-    window.addEventListener('load', async () => {
-        await initWeb3();
-        await connectContracts();
-    });
-
-	// Update balance display on page load
-	window.addEventListener('load', async () => {
-        await initWeb3();
-        await connectContracts();
-        await updateBalanceDisplay();
-    });
-
-    const updateMetamaskId = async () => {
-        try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const metamaskId = accounts[0];
-            document.getElementById('metamaskId').innerText = `Connected Account: ${metamaskId}`;
-        } catch (error) {
-            console.error('Error fetching MetaMask account:', error);
-        }
-    }
-
-    // Update MetaMask account display on page load
-    window.addEventListener('load', async () => {
-        await initWeb3();
-        await connectContracts();
-        await updateBalanceDisplay();
-        await updateMetamaskId();
-    });
-</script>
 
 <style>
     .campaign-container {
@@ -382,7 +112,7 @@
 
     .carousel-inner img {
       display: block;
-      width: 70%;
+      width: 60%;
       margin: auto;
       height: auto;
     }

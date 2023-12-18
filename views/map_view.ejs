@@ -1,32 +1,83 @@
 <%- include partials/header.ejs %>
- 
+
+<div class="jumbotron">
+    <div class="input-container">
+        <h2 class="display-4">Prime Mobiles</h2>
+        <div class="lead">
+            <p>This is your nearest shop location can be found to get your product Delivery</p>
+        </div>
+    </div>
+</div>
+
 <!DOCTYPE html>
 <html>
- 
+
 <head>
     <title>OSM and Leaflet</title>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-</head>
- 
-<body>
-    <div id="map" style="width: 900px; height: 580px"></div>
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-    <script>
-        // Creating map options
-        var mapOptions = {
-            center: [53.349805, -6.26031], // Dublin, Ireland coordinates
-            zoom: 12
+    <style>
+        #map {
+            margin: 0 auto; /* Center the map */
+            width: 80%; /* Adjust the width as needed */
+            height: 580px;
         }
- 
-        // Creating a map object
-        var map = new L.map('map', mapOptions);
- 
-        // Creating a Layer object
-        var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
- 
-        // Adding layer to the map
-        map.addLayer(layer);
-    </script>
+
+        #map-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .jumbotron {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0.3rem;
+        }
+
+        .input-container {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .display-4 {
+            color: #161819; /* Adjust the color as needed */
+        }
+
+        .lead {
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold; /* Add bold font weight to labels */
+        }
+    </style>
+</head>
+
+<body>
+   <div id="map"></div>
+   <div id="map-info">
+       <h4>This is a map of Jervis Shopping Centre in Dublin.</h4>
+       <p>Explore the area and discover more...Thanks for Shopping with us !!!</p>
+   </div>
+   <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+   <script>
+       var mapOptions = {
+           center: [53.348874, -6.265353], // Jervis Shopping Centre, Dublin coordinates
+           zoom: 17 // Increase the zoom level for a closer view
+       }
+       var map = new L.map('map', mapOptions);
+       var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+
+       map.addLayer(layer);
+
+       // Set the map center to Jervis Shopping Centre in Dublin
+       map.setView([53.348874, -6.265353]);
+
+       var jervisMarker = L.marker([53.348874, -6.265353]).addTo(map);
+       jervisMarker.bindPopup("<b>Jervis Shopping Centre, Dublin</b>").openPopup();
+   </script>
 </body>
- 
+
 </html>
